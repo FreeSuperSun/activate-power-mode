@@ -66,9 +66,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	document.body.appendChild(canvas);
 	var context = canvas.getContext('2d');
-	var particles = [];
-	var particlePointer = 0;
-	var rendering = false;
+	//彩弹的数组
+	let particles = [];
+	//操作每个彩弹的位置变量
+	let particlePointer = 0;
+	//TODO 是否渲染? 标识是否正在渲染
+	let rendering = false;
 
 	POWERMODE.shake = true;
 
@@ -120,28 +123,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return {x: 0, y: 0, color: 'transparent'};
 	}
 
+	//创建彩弹
 	function createParticle(x, y, color) {
 	    return {
 	        x: x,
 	        y: y,
 	        alpha: 1,
 	        color: color,
-	        velocity: {
-	            x: -1 + Math.random() * 2,
-	            y: -3.5 + Math.random() * 2
+	        velocity: {//速度
+	            x: -1 + Math.random() * 2,//-1,1 横向会向左向右
+	            y: -3.5 + Math.random() * 2//-3.5,-1.5 垂直向上
 	        }
 	    };
 	}
 
 	POWERMODE.colorful = false;
 
+	//重绘函数
 	function loop() {
+	    //正在渲染
 	    rendering = true;
+	    //TODO clearRect 清空整个canvas
 	    context.clearRect(0, 0, canvas.width, canvas.height);
-	    var rendered = false;
-	    var rect = canvas.getBoundingClientRect();
-	    for (var i = 0; i < particles.length; ++i) {
-	        var particle = particles[i];
+	    //设置渲染完成为false
+	    let rendered = false;
+	    let rect = canvas.getBoundingClientRect();
+	    for (let i = 0; i < particles.length; i++) {
+	        let particle = particles[i];
 	        if (particle.alpha <= 0.1) continue;
 	        particle.velocity.y += 0.075;
 	        particle.x += particle.velocity.x;
@@ -166,10 +174,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	//主程序入口
 	function POWERMODE() {
 	    { // spawn particles
-	        var caret = getCaret();
-	        var numParticles = 5 + Math.round(Math.random() * 10);
+	        //取得光标的位置
+	        let caret = getCaret();
+	        //设置彩弹的数量 0到15个
+	        let numParticles = 5 + Math.round(Math.random() * 10);
+	        //设置每个彩弹
 	        while (numParticles--) {
+	            //给数组里面填充彩弹
 	            particles[particlePointer] = createParticle(caret.x, caret.y, caret.color);
+	            //这里应该是设置彩弹上限的,最多500个
+	            //这里应该没用吧,在上面设置彩弱的时候注意就行了
 	            particlePointer = (particlePointer + 1) % 500;
 	        }
 	    }
@@ -187,6 +201,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 	    if (!rendering) {
+	        //TODO 重绘?
 	        requestAnimationFrame(loop);
 	    }
 	};
@@ -258,7 +273,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        //最后面的||false 应该是不需要的吧.前面返回的肯定是布尔值,如果是true则为true
 	        //false则为false,后面的||false不起作用
 	        let debug = (options && options.debug);
+	        //如果传入参数里面debug为true
+	        //TODO 这里的debug模式是起什么作用?
 	        if (debug) {
+	            //TODO document.querySelector使用
 	            let el = document.querySelector('#input-textarea-caret-position-mirror-div');
 	            if (el) {
 	                el.parentNode.removeChild(el);
@@ -266,12 +284,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        // mirrored div
-	        var div = document.createElement('div');
+	        let div = document.createElement('div');
 	        div.id = 'input-textarea-caret-position-mirror-div';
 	        document.body.appendChild(div);
 
-	        var style = div.style;
-	        var computed = window.getComputedStyle ? getComputedStyle(element) : element.currentStyle;  // currentStyle for IE < 9
+	        let style = div.style;
+	        let computed = window.getComputedStyle ? getComputedStyle(element) : element.currentStyle;  // currentStyle for IE < 9
 
 	        // default textarea styles
 	        style.whiteSpace = 'pre-wrap';
