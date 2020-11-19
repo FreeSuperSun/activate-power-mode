@@ -29,12 +29,17 @@ function getColor(el) {
     }
 }
 
+//取得光标
 function getCaret() {
-    var el = document.activeElement;
-    var bcr;
+    //取得当前激活的元素
+    //TODO document.activeElement
+    let el = document.activeElement;
+    //TODO bcr is what?
+    let bcr = null;
+    //如果是Textarea元素或者是text类型的input元素时
     if (el.tagName === 'TEXTAREA' ||
         (el.tagName === 'INPUT' && el.getAttribute('type') === 'text')) {
-        var offset = require('textarea-caret-position')(el, el.selectionEnd);
+        var offset = require('textarea-caret-position')(el, el.selectionEnd, {debug: false});
         bcr = el.getBoundingClientRect();
         return {
             x: offset.left + bcr.left,
@@ -56,7 +61,7 @@ function getCaret() {
             color: getColor(startNode)
         };
     }
-    return { x: 0, y: 0, color: 'transparent' };
+    return {x: 0, y: 0, color: 'transparent'};
 }
 
 function createParticle(x, y, color) {
@@ -72,32 +77,6 @@ function createParticle(x, y, color) {
     };
 }
 
-function POWERMODE() {
-    { // spawn particles
-        var caret = getCaret();
-        var numParticles = 5 + Math.round(Math.random() * 10);
-        while (numParticles--) {
-            particles[particlePointer] = createParticle(caret.x, caret.y, caret.color);
-            particlePointer = (particlePointer + 1) % 500;
-        }
-    }
-    { // shake screen
-        if (POWERMODE.shake) {
-            var intensity = 1 + 2 * Math.random();
-            var x = intensity * (Math.random() > 0.5 ? -1 : 1);
-            var y = intensity * (Math.random() > 0.5 ? -1 : 1);
-            document.body.style.marginLeft = x + 'px';
-            document.body.style.marginTop = y + 'px';
-            setTimeout(function() {
-                document.body.style.marginLeft = '';
-                document.body.style.marginTop = '';
-            }, 75);
-        }
-    }
-    if(!rendering){
-        requestAnimationFrame(loop);
-    }
-};
 POWERMODE.colorful = false;
 
 function loop() {
@@ -121,11 +100,38 @@ function loop() {
         );
         rendered = true;
     }
-    if(rendered){
+    if (rendered) {
         requestAnimationFrame(loop);
-    }else{
+    } else {
         rendering = false;
     }
 }
 
+//主程序入口
+function POWERMODE() {
+    { // spawn particles
+        var caret = getCaret();
+        var numParticles = 5 + Math.round(Math.random() * 10);
+        while (numParticles--) {
+            particles[particlePointer] = createParticle(caret.x, caret.y, caret.color);
+            particlePointer = (particlePointer + 1) % 500;
+        }
+    }
+    { // shake screen
+        if (POWERMODE.shake) {
+            var intensity = 1 + 2 * Math.random();
+            var x = intensity * (Math.random() > 0.5 ? -1 : 1);
+            var y = intensity * (Math.random() > 0.5 ? -1 : 1);
+            document.body.style.marginLeft = x + 'px';
+            document.body.style.marginTop = y + 'px';
+            setTimeout(function () {
+                document.body.style.marginLeft = '';
+                document.body.style.marginTop = '';
+            }, 75);
+        }
+    }
+    if (!rendering) {
+        requestAnimationFrame(loop);
+    }
+};
 module.exports = POWERMODE;
