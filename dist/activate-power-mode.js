@@ -54,34 +54,43 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	'use strict';
-
-	var canvas = document.createElement('canvas');
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
-	canvas.style.cssText = 'position:fixed;top:0;left:0;pointer-events:none;z-index:999999';
-	window.addEventListener('resize', function () {
+	//绘制彩弹的画布初始化
+	function initCanvas() {
+	    let canvas = document.createElement('canvas');
 	    canvas.width = window.innerWidth;
 	    canvas.height = window.innerHeight;
-	});
-	document.body.appendChild(canvas);
-	var context = canvas.getContext('2d');
+	    canvas.style.cssText = 'position:fixed;top:0;left:0;pointer-events:none;z-index:999999';
+	    //屏幕发生尺寸变化的时候重置canvas尺寸
+	    window.addEventListener('resize', function () {
+	        canvas.width = window.innerWidth;
+	        canvas.height = window.innerHeight;
+	    });
+	    document.body.appendChild(canvas);
+	    return canvas;
+	}
+
+	let canvas = initCanvas();
+
+	//canvas的上下文
+	//TODO canvas相关
+	let canvasContext = canvas.getContext('2d');
 	//彩弹的数组
 	let particles = [];
 	//操作每个彩弹的位置变量
 	let particlePointer = 0;
 	//TODO 是否渲染? 标识是否正在渲染
 	let rendering = false;
-
+	//设置是否震动窗口
 	POWERMODE.shake = true;
 
+	//随机数,包含min 不包含max
 	function getRandom(min, max) {
 	    return Math.random() * (max - min) + min;
 	}
 
 	function getColor(el) {
 	    if (POWERMODE.colorful) {
-	        var u = getRandom(0, 360);
+	        let u = getRandom(0, 360);
 	        return 'hsla(' + getRandom(u - 10, u + 10) + ', 100%, ' + getRandom(50, 80) + '%, ' + 1 + ')';
 	    } else {
 	        return window.getComputedStyle(el).color;
@@ -123,7 +132,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return {x: 0, y: 0, color: 'transparent'};
 	}
 
-	//创建彩弹
+	//生成一个彩弹的属性
 	function createParticle(x, y, color) {
 	    return {
 	        x: x,
@@ -144,31 +153,62 @@ return /******/ (function(modules) { // webpackBootstrap
 	    //正在渲染
 	    rendering = true;
 	    //TODO clearRect 清空整个canvas
-	    context.clearRect(0, 0, canvas.width, canvas.height);
+	    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
 	    //设置渲染完成为false
 	    let rendered = false;
 	    let rect = canvas.getBoundingClientRect();
+	    //TODO for循环不是可以用const吗?
+	    //对每个小球进行绘制
 	    for (let i = 0; i < particles.length; i++) {
 	        let particle = particles[i];
-	        if (particle.alpha <= 0.1) continue;
+	        //如果小球的alpha到了0.1,就再不继续绘制下一次了,就消失了
+	        if (particle.alpha <= 0.1)
+	            continue;
+	        // 垂直方向速度减小,模拟抛物到下落的过程,应该最终的效果是1秒9.8
+	        //TODO 是怎么控制刷新频率的?
 	        particle.velocity.y += 0.075;
+	        //水平 垂直 位移
 	        particle.x += particle.velocity.x;
 	        particle.y += particle.velocity.y;
+	        //小球逐渐消失
 	        particle.alpha *= 0.96;
-	        context.globalAlpha = particle.alpha;
-	        context.fillStyle = particle.color;
-	        context.fillRect(
+	        canvasContext.globalAlpha = particle.alpha;
+	        canvasContext.fillStyle = particle.color;
+	        //画出小球
+	        //TODO fillRect的用法
+	        canvasContext.fillRect(
 	            Math.round(particle.x - 1.5) - rect.left,
 	            Math.round(particle.y - 1.5) - rect.top,
 	            3, 3
 	        );
+	        //只要有一次循环,就会设成true,否则就会false,这是个递归条件.
+	        //可以配合前面的continue,如果某个循环一次小球都没画,说明已经画完了.
+	        //rendered就会是false,就不会进行下一次的递归.
 	        rendered = true;
 	    }
+	    //如果上次还画过小球,就进行下一次递归
 	    if (rendered) {
 	        requestAnimationFrame(loop);
 	    } else {
+	        //否则,就把rendering设为false,表示不在渲染中.
 	        rendering = false;
 	    }
+	}
+
+	//震动窗口
+	function shakeWindow() {
+	    //随机指定系数
+	    let intensity = 1 + 2 * Math.random();
+	    //随机指定方向
+	    let x = intensity * (Math.random() > 0.5 ? -1 : 1);
+	    let y = intensity * (Math.random() > 0.5 ? -1 : 1);
+	    document.body.style.marginLeft = x + 'px';
+	    document.body.style.marginTop = y + 'px';
+	    //计时器恢复原来的位置
+	    setTimeout(function () {
+	        document.body.style.marginLeft = '';
+	        document.body.style.marginTop = '';
+	    }, 500);
 	}
 
 	//主程序入口
@@ -188,24 +228,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 	    { // shake screen
-	        if (POWERMODE.shake) {
-	            var intensity = 1 + 2 * Math.random();
-	            var x = intensity * (Math.random() > 0.5 ? -1 : 1);
-	            var y = intensity * (Math.random() > 0.5 ? -1 : 1);
-	            document.body.style.marginLeft = x + 'px';
-	            document.body.style.marginTop = y + 'px';
-	            setTimeout(function () {
-	                document.body.style.marginLeft = '';
-	                document.body.style.marginTop = '';
-	            }, 75);
+	        if (!rendering) {
+	            //TODO 重绘?
+	            requestAnimationFrame(loop);
 	        }
 	    }
-	    if (!rendering) {
-	        //TODO 重绘?
-	        requestAnimationFrame(loop);
-	    }
-	};
-	module.exports = POWERMODE;
+	}
+
+	module.exports = {POWERMODE, shakeWindow};
 
 
 /***/ }),
