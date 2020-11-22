@@ -202,13 +202,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    //随机指定方向
 	    let x = intensity * (Math.random() > 0.5 ? -1 : 1);
 	    let y = intensity * (Math.random() > 0.5 ? -1 : 1);
+	    console.log(x, y);
 	    document.body.style.marginLeft = x + 'px';
 	    document.body.style.marginTop = y + 'px';
 	    //计时器恢复原来的位置
 	    setTimeout(function () {
 	        document.body.style.marginLeft = '';
 	        document.body.style.marginTop = '';
-	    }, 500);
+	    }, 50);
 	}
 
 	//主程序入口
@@ -235,7 +236,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 
-	module.exports = {POWERMODE, shakeWindow};
+	//导出模块
+	module.exports = {shakeWindow: shakeWindow, POWERMODE: POWERMODE};
 
 
 /***/ }),

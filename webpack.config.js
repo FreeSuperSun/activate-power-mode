@@ -9,6 +9,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].js',
+        //TODO 这里关系到在html里面如何使用发布的库
         libraryTarget: 'umd',
         library: 'POWERMODE'
     },

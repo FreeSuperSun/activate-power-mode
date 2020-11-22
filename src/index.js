@@ -139,23 +139,8 @@ function loop() {
     }
 }
 
-//震动窗口
-function shakeWindow() {
-    //随机指定系数
-    let intensity = 1 + 2 * Math.random();
-    //随机指定方向
-    let x = intensity * (Math.random() > 0.5 ? -1 : 1);
-    let y = intensity * (Math.random() > 0.5 ? -1 : 1);
-    document.body.style.marginLeft = x + 'px';
-    document.body.style.marginTop = y + 'px';
-    //计时器恢复原来的位置
-    setTimeout(function () {
-        document.body.style.marginLeft = '';
-        document.body.style.marginTop = '';
-    }, 500);
-}
 
-//主程序入口
+//彩弹
 function POWERMODE() {
     { // spawn particles
         //取得光标的位置
@@ -180,4 +165,4 @@ function POWERMODE() {
 }
 
 //导出模块
-module.exports = {POWERMODE, shakeWindow};
+module.exports = {POWERMODE: POWERMODE};
