@@ -140,7 +140,6 @@ function POWERMODE() {
     //只有当前数组为空,且本次插入了几个彩弹的时候,才需要开始动画.如果现在有动画运行,就
     //不能再次绑定动画函数,,否则会使动画加速.
     if (particles.length === numParticles) {
-        //如果正在渲案中,就没必要再加添loop,因为彩弹已经加到数组里了,也会进行绘制.
         requestAnimationFrame(loop);
     }
 }

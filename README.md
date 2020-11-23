@@ -26,7 +26,7 @@ Forked from disjukr/activate-power-mode
 ## 相应知识点
 1. canvas的使用,主要是相关的API
 2. document.activeElement 获取当前激活的页面元素
-3. getBoundingClientRect()的使用,获取当前元素的位置和大小信息
+3. getBoundingClientRect的使用,获取当前元素的位置和大小信息
 4. 遍历中的数组动态进行删除或插入操作,需要注意索引的值
 5. 利用 requestAnimationFrame来制作动画
 ---
